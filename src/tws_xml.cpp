@@ -118,13 +118,15 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const Contract& c )
 	ADD_ATTR_BOOL( c, includeExpired );
 	ADD_ATTR_STRING( c, secIdType );
 	ADD_ATTR_STRING( c, secId );
+	ADD_ATTR_STRING( c, description );
+	ADD_ATTR_STRING( c, issuerId );
 	ADD_ATTR_STRING( c, comboLegsDescrip );
 
 	if( c.comboLegs.get() != NULL ) {
-		xmlNodePtr ncl = xmlNewChild( ne, NULL, (xmlChar*)"comboLegs", NULL);
+		xmlNodePtr ncl = xmlNewChild( ne, NULL, (xmlChar*)"comboLegList", NULL);
 		for( Contract::ComboLegList::const_iterator it
 			    = c.comboLegs->begin(); it != c.comboLegs->end(); ++it) {
-			conv_ib2xml( ncl, "comboLeg", **it );
+			conv_ib2xml( ncl, "comboLegs", **it );
 		}
 	}
 	if( c.deltaNeutralContract != NULL ) {
@@ -133,8 +135,7 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const Contract& c )
 }
 
 
-void conv_ib2xml( xmlNodePtr parent, const char* name,
-	const ContractDetails& cd )
+void conv_ib2xml( xmlNodePtr parent, const char* name, const ContractDetails& cd )
 {
 	char tmp[128];
 	static const ContractDetails dflt;
@@ -142,7 +143,7 @@ void conv_ib2xml( xmlNodePtr parent, const char* name,
 	xmlNodePtr ne = xmlNewChild( parent, NULL,
 		(const xmlChar*)name, NULL);
 
-	conv_ib2xml( ne, "summary", cd.summary );
+	conv_ib2xml( ne, "contract", cd.contract );
 
 	ADD_ATTR_STRING( cd, marketName );
 	ADD_ATTR_DOUBLE( cd, minTick );
@@ -160,15 +161,16 @@ void conv_ib2xml( xmlNodePtr parent, const char* name,
 	ADD_ATTR_STRING( cd, liquidHours );
 	ADD_ATTR_STRING( cd, evRule );
 	ADD_ATTR_DOUBLE( cd, evMultiplier );
-#if TWSAPI_IB_VERSION_NUMBER >= 97300
-	ADD_ATTR_INT( cd, mdSizeMultiplier );
 	ADD_ATTR_INT( cd, aggGroup );
 	ADD_ATTR_STRING( cd, underSymbol );
 	ADD_ATTR_STRING( cd, underSecType );
 	ADD_ATTR_STRING( cd, marketRuleIds );
 	ADD_ATTR_STRING( cd, realExpirationDate );
 	ADD_ATTR_STRING( cd, lastTradeTime );
-#endif
+	ADD_ATTR_STRING( cd, stockType );
+	ADD_ATTR_DECIMAL( cd, minSize );
+	ADD_ATTR_DECIMAL( cd, sizeIncrement );
+	ADD_ATTR_DECIMAL( cd, suggestedSizeIncrement );
 
 	// BOND values
 	ADD_ATTR_STRING( cd, cusip );
@@ -204,35 +206,22 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const Execution& e )
 	ADD_ATTR_STRING( e, acctNumber );
 	ADD_ATTR_STRING( e, exchange );
 	ADD_ATTR_STRING( e, side );
-#if TWSAPI_IB_VERSION_NUMBER >= 97200
-	ADD_ATTR_DOUBLE( e, shares );
-#else
-	ADD_ATTR_INT( e, shares );
-#endif
+	ADD_ATTR_DECIMAL( e, shares );
 	ADD_ATTR_DOUBLE( e, price );
 	ADD_ATTR_INT( e, permId );
 	ADD_ATTR_LONG( e, clientId );
 	ADD_ATTR_LONG( e, orderId );
 	ADD_ATTR_INT( e, liquidation );
-#if TWSAPI_IB_VERSION_NUMBER >= 97300
-	ADD_ATTR_DOUBLE( e, cumQty );
-#else
-	ADD_ATTR_INT( e, cumQty );
-#endif
+	ADD_ATTR_DECIMAL( e, cumQty );
 	ADD_ATTR_DOUBLE( e, avgPrice );
 	ADD_ATTR_STRING( e, orderRef );
 	ADD_ATTR_STRING( e, evRule );
 	ADD_ATTR_DOUBLE( e, evMultiplier );
-#if TWSAPI_IB_VERSION_NUMBER >= 97200
 	ADD_ATTR_STRING( e, modelCode );
-#endif
-#if TWSAPI_IB_VERSION_NUMBER >= 97300
 	ADD_ATTR_INT( e, lastLiquidity );
-#endif
 }
 
-void conv_ib2xml( xmlNodePtr parent, const char* name,
-	const ExecutionFilter& eF )
+void conv_ib2xml( xmlNodePtr parent, const char* name, const ExecutionFilter& eF )
 {
 	char tmp[128];
 	static const ExecutionFilter dflt;
@@ -260,8 +249,7 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const TagValue& tV )
 	ADD_ATTR_STRING( tV, value );
 }
 
-void conv_ib2xml( xmlNodePtr parent, const char* name,
-	const OrderComboLeg& oCL )
+void conv_ib2xml( xmlNodePtr parent, const char* name, const OrderComboLeg& oCL )
 {
 	char tmp[128];
 	static const OrderComboLeg dflt;
@@ -289,7 +277,7 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const Order& o )
 #endif
 	ADD_ATTR_STRING( o, action );
 #if TWSAPI_IB_VERSION_NUMBER >= 97200
-	ADD_ATTR_DOUBLE( o, totalQuantity );
+	ADD_ATTR_DECIMAL( o, totalQuantity );
 #else
 	ADD_ATTR_LONG( o, totalQuantity );
 #endif
@@ -331,9 +319,6 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const Order& o )
 	ADD_ATTR_STRING( o, designatedLocation );
 	ADD_ATTR_INT( o, exemptCode );
 	ADD_ATTR_DOUBLE( o, discretionaryAmt );
-	ADD_ATTR_BOOL( o, eTradeOnly );
-	ADD_ATTR_BOOL( o, firmQuoteOnly );
-	ADD_ATTR_DOUBLE( o, nbboPriceCap );
 	ADD_ATTR_BOOL( o, optOutSmartRouting );
 	ADD_ATTR_INT( o, auctionStrategy );
 	ADD_ATTR_DOUBLE( o, startingPrice );
@@ -446,14 +431,12 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const OrderState& os)
 		(const xmlChar*)name, NULL);
 
 	ADD_ATTR_STRING( os, status );
-#if TWSAPI_VERSION_NUMBER >= 17300
 	ADD_ATTR_STRING( os, initMarginBefore );
 	ADD_ATTR_STRING( os, maintMarginBefore );
 	ADD_ATTR_STRING( os, equityWithLoanBefore );
 	ADD_ATTR_STRING( os, initMarginChange );
 	ADD_ATTR_STRING( os, maintMarginChange );
 	ADD_ATTR_STRING( os, equityWithLoanChange );
-#endif
 	ADD_ATTR_STRING( os, initMarginAfter );
 	ADD_ATTR_STRING( os, maintMarginAfter );
 	ADD_ATTR_STRING( os, equityWithLoanAfter );
@@ -462,6 +445,8 @@ void conv_ib2xml( xmlNodePtr parent, const char* name, const OrderState& os)
 	ADD_ATTR_DOUBLE( os, maxCommission );
 	ADD_ATTR_STRING( os, commissionCurrency );
 	ADD_ATTR_STRING( os, warningText );
+	ADD_ATTR_STRING( os, completedTime );
+	ADD_ATTR_STRING( os, completedStatus );
 }
 
 
@@ -520,6 +505,8 @@ void conv_xml2ib( Contract* c, const xmlNodePtr node )
 	GET_ATTR_BOOL( c, includeExpired );
 	GET_ATTR_STRING( c, secIdType );
 	GET_ATTR_STRING( c, secId );
+	GET_ATTR_STRING( c, description );
+	GET_ATTR_STRING( c, issuerId );
 	GET_ATTR_STRING( c, comboLegsDescrip );
 
 	for( xmlNodePtr p = node->children; p!= NULL; p=p->next) {
@@ -558,8 +545,6 @@ void conv_xml2ib( ContractDetails* cd, const xmlNodePtr node )
 	char* tmp;
 
 	GET_ATTR_STRING( cd, marketName );
-	/* for compatibility we move tradingClass attribute to the contract */
-	GET_ATTR_STRING( (&cd->summary), tradingClass );
 	GET_ATTR_DOUBLE( cd, minTick );
 	GET_ATTR_STRING( cd, orderTypes );
 	GET_ATTR_STRING( cd, validExchanges );
@@ -576,13 +561,16 @@ void conv_xml2ib( ContractDetails* cd, const xmlNodePtr node )
 	GET_ATTR_STRING( cd, evRule );
 	GET_ATTR_DOUBLE( cd, evMultiplier );
 #if TWSAPI_IB_VERSION_NUMBER >= 97300
-	GET_ATTR_INT( cd, mdSizeMultiplier );
 	GET_ATTR_INT( cd, aggGroup );
 	GET_ATTR_STRING( cd, underSymbol );
 	GET_ATTR_STRING( cd, underSecType );
 	GET_ATTR_STRING( cd, marketRuleIds );
 	GET_ATTR_STRING( cd, realExpirationDate );
 	GET_ATTR_STRING( cd, lastTradeTime );
+	GET_ATTR_STRING( cd, stockType );
+    GET_ATTR_DECIMAL( cd, minSize );
+    GET_ATTR_DECIMAL( cd, sizeIncrement );
+    GET_ATTR_DECIMAL( cd, suggestedSizeIncrement );
 #endif
 	// BOND values
 	GET_ATTR_STRING( cd, cusip );
@@ -624,31 +612,19 @@ void conv_xml2ib( Execution* e, const xmlNodePtr node )
 	GET_ATTR_STRING( e, acctNumber );
 	GET_ATTR_STRING( e, exchange );
 	GET_ATTR_STRING( e, side );
-#if TWSAPI_IB_VERSION_NUMBER >= 97200
-	GET_ATTR_DOUBLE( e, shares );
-#else
-	GET_ATTR_INT( e, shares );
-#endif
+	GET_ATTR_DECIMAL( e, shares );
 	GET_ATTR_DOUBLE( e, price );
 	GET_ATTR_INT( e, permId );
 	GET_ATTR_LONG( e, clientId );
 	GET_ATTR_LONG( e, orderId );
 	GET_ATTR_INT( e, liquidation );
-#if TWSAPI_IB_VERSION_NUMBER >= 97300
-	GET_ATTR_DOUBLE( e, cumQty );
-#else
-	GET_ATTR_INT( e, cumQty );
-#endif
+	GET_ATTR_DECIMAL( e, cumQty );
 	GET_ATTR_DOUBLE( e, avgPrice );
 	GET_ATTR_STRING( e, orderRef );
 	GET_ATTR_STRING( e, evRule );
 	GET_ATTR_DOUBLE( e, evMultiplier );
-#if TWSAPI_IB_VERSION_NUMBER >= 97200
 	GET_ATTR_STRING( e, modelCode );
-#endif
-#if TWSAPI_IB_VERSION_NUMBER >= 97300
 	GET_ATTR_INT( e, lastLiquidity );
-#endif
 }
 
 
@@ -693,7 +669,7 @@ void conv_xml2ib( Order* o, const xmlNodePtr node )
 #endif
 	GET_ATTR_STRING( o, action );
 #if TWSAPI_IB_VERSION_NUMBER >= 97200
-	GET_ATTR_DOUBLE( o, totalQuantity );
+	GET_ATTR_DECIMAL( o, totalQuantity );
 #else
 	GET_ATTR_LONG( o, totalQuantity );
 #endif
@@ -741,9 +717,6 @@ void conv_xml2ib( Order* o, const xmlNodePtr node )
 	GET_ATTR_STRING( o, designatedLocation );
 	GET_ATTR_INT( o, exemptCode );
 	GET_ATTR_DOUBLE( o, discretionaryAmt );
-	GET_ATTR_BOOL( o, eTradeOnly );
-	GET_ATTR_BOOL( o, firmQuoteOnly );
-	GET_ATTR_DOUBLE( o, nbboPriceCap );
 	GET_ATTR_BOOL( o, optOutSmartRouting );
 	GET_ATTR_INT( o, auctionStrategy );
 	GET_ATTR_DOUBLE( o, startingPrice );
@@ -820,14 +793,33 @@ void conv_xml2ib( Order* o, const xmlNodePtr node )
 
 // TODO SoftDollarTier softDollarTier;
 #endif
-#if TWSAPI_IB_VERSION_NUMBER >= 97300
+
 	GET_ATTR_DOUBLE( o, cashQty );
 	GET_ATTR_STRING( o, mifid2DecisionMaker);
 	GET_ATTR_STRING( o, mifid2DecisionAlgo);
 	GET_ATTR_STRING( o, mifid2ExecutionTrader);
 	GET_ATTR_STRING( o, mifid2ExecutionAlgo);
 	GET_ATTR_BOOL( o, dontUseAutoPriceForHedge );
-#endif
+	GET_ATTR_BOOL( o, isOmsContainer );
+	GET_ATTR_BOOL( o, discretionaryUpToLimitPrice );
+	GET_ATTR_STRING( o, autoCancelDate );
+    GET_ATTR_DECIMAL( o, filledQuantity );
+    GET_ATTR_INT( o, refFuturesConId );
+    GET_ATTR_BOOL( o, autoCancelParent );
+    GET_ATTR_STRING( o, shareholder );
+    GET_ATTR_BOOL( o, imbalanceOnly );
+    GET_ATTR_BOOL( o, routeMarketableToBbo );
+    GET_ATTR_LONGLONG( o, parentPermId );
+
+    GET_ATTR_INT( o, duration );
+    GET_ATTR_INT( o, postToAts );
+    GET_ATTR_STRING( o, advancedErrorOverride );
+    GET_ATTR_STRING( o, manualOrderTime );
+    GET_ATTR_INT( o, minTradeQty );
+    GET_ATTR_INT( o, minCompeteSize );
+    GET_ATTR_DOUBLE( o, competeAgainstBestOffset );
+    GET_ATTR_DOUBLE( o, midOffsetAtWhole );
+    GET_ATTR_DOUBLE( o, midOffsetAtHalf );
 
 	for( xmlNodePtr p = node->children; p!= NULL; p=p->next) {
 		if( p->type != XML_ELEMENT_NODE ) {
@@ -864,14 +856,12 @@ void conv_xml2ib( OrderState* os, const xmlNodePtr node )
 	char* tmp;
 
 	GET_ATTR_STRING( os, status );
-#if TWSAPI_VERSION_NUMBER >= 17300
 	GET_ATTR_STRING( os, initMarginBefore );
 	GET_ATTR_STRING( os, maintMarginBefore );
 	GET_ATTR_STRING( os, equityWithLoanBefore );
 	GET_ATTR_STRING( os, initMarginChange );
 	GET_ATTR_STRING( os, maintMarginChange );
 	GET_ATTR_STRING( os, equityWithLoanChange );
-#endif
 	GET_ATTR_STRING( os, initMarginAfter );
 	GET_ATTR_STRING( os, maintMarginAfter );
 	GET_ATTR_STRING( os, equityWithLoanAfter );
@@ -880,6 +870,8 @@ void conv_xml2ib( OrderState* os, const xmlNodePtr node )
 	GET_ATTR_DOUBLE( os, maxCommission );
 	GET_ATTR_STRING( os, commissionCurrency );
 	GET_ATTR_STRING( os, warningText );
+	GET_ATTR_STRING( os, completedTime );
+	GET_ATTR_STRING( os, completedStatus );	
 }
 
 
@@ -1070,9 +1062,9 @@ void to_xml( xmlNodePtr parent, const char* name, const RowHist& r)
 	ADD_ATTR_DOUBLE( r, high );
 	ADD_ATTR_DOUBLE( r, low );
 	ADD_ATTR_DOUBLE( r, close );
-	ADD_ATTR_LONGLONG( r, volume );
+	ADD_ATTR_DECIMAL( r, volume );
 	ADD_ATTR_INT( r, count );
-	ADD_ATTR_DOUBLE( r, WAP );
+	ADD_ATTR_DECIMAL( r, WAP );
 	ADD_ATTR_BOOL( r, hasGaps );
 }
 
@@ -1097,7 +1089,7 @@ void to_xml( xmlNodePtr parent, const RowAcc& row )
 			xmlNodePtr nrow = xmlNewChild( parent,
 				NULL, (const xmlChar*)"Prtfl", NULL);
 			conv_ib2xml( nrow, "contract", d.contract );
-			A_ADD_ATTR_DOUBLE( nrow, d, position );
+			A_ADD_ATTR_DECIMAL( nrow, d, position );
 			A_ADD_ATTR_DOUBLE( nrow, d, marketPrice );
 			A_ADD_ATTR_DOUBLE( nrow, d, marketValue );
 			A_ADD_ATTR_DOUBLE( nrow, d, averageCost );
@@ -1143,8 +1135,8 @@ static void to_xml( xmlNodePtr parent, const RowOrderStatus &d )
 		NULL, (const xmlChar*)"OrderStatus", NULL);
 	A_ADD_ATTR_LONG(nrow, d, id);
 	A_ADD_ATTR_STRING( nrow, d, status );
-	A_ADD_ATTR_DOUBLE( nrow, d, filled );
-	A_ADD_ATTR_DOUBLE( nrow, d, remaining );
+	A_ADD_ATTR_DECIMAL( nrow, d, filled );
+	A_ADD_ATTR_DECIMAL( nrow, d, remaining );
 	A_ADD_ATTR_DOUBLE( nrow, d, avgFillPrice );
 	A_ADD_ATTR_INT( nrow, d, permId );
 	A_ADD_ATTR_INT( nrow, d, parentId );

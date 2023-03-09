@@ -1122,22 +1122,23 @@ void TwsDL::twsTickSize( int reqId, TickType field, int size )
 		c.symbol.c_str(), c.conId, ibToString(field).c_str(), size );
 }
 
-void TwsDL::twsTickOptionComputation( TickerId reqId,
-	TickType tickType, double impliedVol, double delta,
-	double optPrice, double pvDividend, double gamma, double vega,
-	double theta, double undPrice )
+void TwsDL::twsTickOptionComputation( TickerId tickerId, TickType tickType, 
+            int tickAttrib, double impliedVol, double delta, 
+            double optPrice, double pvDividend, double gamma, 
+            double vega, double theta, double undPrice)
 {
-	const Contract &c
-		= workTodo->getMktDataTodo().mktDataRequests[reqId - 1].ibContract;
-	DEBUG_PRINTF("TICK_OPTION_COMPUTATION: %ld %s %ld %s %g %g %g %g %g %g %g %g",
-		reqId, c.symbol.c_str(), c.conId, ibToString(tickType).c_str(),
-		impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice );
+	const Contract &c = workTodo->getMktDataTodo().mktDataRequests[tickerId - 1].ibContract;
+	DEBUG_PRINTF("TICK_OPTION_COMPUTATION: %ld %s %ld %s %d %g %g %g %g %g %g %g %g",
+		tickerId, c.symbol.c_str(), c.conId, 
+		ibToString(tickType).c_str(), 
+		tickAttrib, impliedVol, delta, 
+		optPrice, pvDividend, gamma, 
+		vega, theta, undPrice );
 }
 
 void TwsDL::twsTickGeneric( TickerId reqId, TickType tickType, double value )
 {
-	const Contract &c
-		= workTodo->getMktDataTodo().mktDataRequests[reqId - 1].ibContract;
+	const Contract &c = workTodo->getMktDataTodo().mktDataRequests[reqId - 1].ibContract;
 	DEBUG_PRINTF("TICK_GENERIC: %ld %s %ld %s %g", reqId,
 		c.symbol.c_str(), c.conId, ibToString(tickType).c_str(), value );
 }
@@ -1145,8 +1146,7 @@ void TwsDL::twsTickGeneric( TickerId reqId, TickType tickType, double value )
 void TwsDL::twsTickString(TickerId reqId, TickType tickType,
 	const IBString& value )
 {
-	const Contract &c
-		= workTodo->getMktDataTodo().mktDataRequests[reqId - 1].ibContract;
+	const Contract &c = workTodo->getMktDataTodo().mktDataRequests[reqId - 1].ibContract;
 	DEBUG_PRINTF("TICK_STRING: %ld %s %ld %s %s", reqId,
 		c.symbol.c_str(), c.conId, ibToString(tickType).c_str(), value.c_str() );
 }

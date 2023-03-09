@@ -237,9 +237,9 @@ void TWSClient::placeOrder ( int id, const Contract &contract,
 
 void TWSClient::cancelOrder ( int id )
 {
-	DEBUG_PRINTF("CANCEL_ORDER %d", id);
-
-	ePosixClient->cancelOrder( id );
+    std::string date;
+	ePosixClient->cancelOrder( id, date );
+	DEBUG_PRINTF("CANCEL_ORDER %d at %s", id, date.c_str());
 }
 
 

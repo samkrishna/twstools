@@ -14,6 +14,8 @@
 #include <inttypes.h>
 
 #include <twsapi/twsapi_config.h>
+#include <twsapi/Decimal.h>
+#include <stdlib.h>
 
 #ifndef TWSAPI_NO_NAMESPACE
 namespace IB {
@@ -184,6 +186,13 @@ class TwsXml
 		free(tmp); \
 	}
 
+#define GET_ATTR_DECIMAL( _struct_, _attr_ ) \
+	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
+	if( tmp ) { \
+		_struct_->_attr_ = strtoull( tmp, NULL, 0 ); \
+		free(tmp); \
+	}
+
 
 #define ADD_ATTR_INT( _struct_, _attr_ ) \
 	if( !TwsXml::skip_defaults || _struct_._attr_ != dflt._attr_ ) { \
@@ -221,6 +230,11 @@ class TwsXml
 			(xmlChar*) _struct_._attr_.c_str() ); \
 	}
 
+#define ADD_ATTR_DECIMAL( _struct_, _attr_ ) \
+	if( !TwsXml::skip_defaults || _struct_._attr_ != dflt._attr_ ) { \
+		snprintf(tmp, sizeof(tmp), "%llu", _struct_._attr_ ); \
+		xmlNewProp ( ne, (xmlChar*) #_attr_, (xmlChar*) tmp ); \
+	}
 
 #define A_ADD_ATTR_INT( _ne_, _struct_, _attr_ ) \
 	snprintf(tmp, sizeof(tmp), "%d",_struct_._attr_ ); \
@@ -238,5 +252,8 @@ class TwsXml
 	xmlNewProp ( _ne_, (xmlChar*) #_attr_, \
 		(const xmlChar*) _struct_._attr_.c_str() )
 
+#define A_ADD_ATTR_DECIMAL( _ne_, _struct_, _attr_ ) \
+	snprintf(tmp, sizeof(tmp), "%llu", _struct_._attr_ ); \
+	xmlNewProp ( _ne_, (xmlChar*) #_attr_, (xmlChar*) tmp )
 
 #endif

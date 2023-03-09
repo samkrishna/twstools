@@ -15,6 +15,7 @@
 #include <twsapi/Order.h>
 #include <twsapi/OrderState.h>
 #include <twsapi/CommonDefs.h>
+#include <twsapi/Decimal.h>
 
 #include <stdint.h>
 #include <list>
@@ -247,6 +248,7 @@ struct RowError
 	int id;
 	int code;
 	IBString msg;
+	IBString json;
 };
 struct RowOrderStatus;
 struct RowOpenOrder;
@@ -322,15 +324,15 @@ struct RowHist
 	double high;
 	double low;
 	double close;
-	long long volume;
+	Decimal volume;
 	int count;
-	double WAP;
+	Decimal WAP;
 	bool hasGaps;
 };
 
 /* we need a default object but want to avoid a slow default constructor */
 static const RowHist dflt_RowHist
- 	= {"", -1.0, -1.0, -1.0, -1.0, -1, -1, -1.0, false };
+ 	= {"", -1.0, -1.0, -1.0, -1.0, UNSET_DECIMAL, -1, UNSET_DECIMAL, false };
 
 class PacketHistData
 	: public  Packet
@@ -408,7 +410,7 @@ struct RowAccVal
 struct RowPrtfl
 {
 	Contract contract;
-	double position;
+	Decimal position;
 	double marketPrice;
 	double marketValue;
 	double averageCost;
@@ -490,8 +492,8 @@ struct RowOrderStatus
 {
 	OrderId id;
 	std::string status;
-	double filled;
-	double remaining;
+	Decimal filled;
+	Decimal remaining;
 	double avgFillPrice;
 	int permId;
 	int parentId;
