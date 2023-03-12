@@ -678,3 +678,44 @@ void TwsDlWrapper::orderBound(long long orderId, int apiClientId,
 {
 	DEBUG_PRINTF("ORDER_BOUND: %lld", orderId);
 }
+
+// New methods caused by TWSAPI 10.19.1
+
+void TwsDlWrapper::wshMetaData(int reqId, const std::string& dataJson)
+{
+	DEBUG_PRINTF( "WSH_META_DATA: %d %s", reqId, dataJson.c_str() );
+}
+
+void TwsDlWrapper::replaceFAEnd(int reqId, const std::string& text)
+{
+	DEBUG_PRINTF( "REPLACE_FA_END: %d %s", reqId, text.c_str() );
+}
+
+void TwsDlWrapper::wshEventData(int reqId, const std::string& dataJson)
+{
+	DEBUG_PRINTF( "WSH_EVENT_DATA: %d %s", reqId, dataJson.c_str() );
+}
+
+void TwsDlWrapper::completedOrder(const Contract& contract, const Order& order, const OrderState& orderState)
+{
+    DEBUG_PRINTF("COMPLETED_ORDER: Contract ID: %ld and order ID: %ld with status: %s", 
+        contract.conId, order.orderId, orderState.status.c_str() );
+}
+
+void TwsDlWrapper::completedOrdersEnd()
+{
+    DEBUG_PRINTF("COMPLETED_ORDER_END");
+}
+
+void TwsDlWrapper::historicalSchedule(int reqId, const std::string& startDateTime, const std::string& endDateTime, const std::string& timeZone, const std::vector<HistoricalSession>& sessions)
+{
+	DEBUG_PRINTF("HISTORICAL_SCHEDULE. ReqId: %d, Start: %s, End: %s, TimeZone: %s\n", reqId, startDateTime.c_str(), endDateTime.c_str(), timeZone.c_str());
+	for (unsigned int i = 0; i < sessions.size(); i++) {
+		DEBUG_PRINTF("\tSession. Start: %s, End: %s, RefDate: %s\n", sessions[i].startDateTime.c_str(), sessions[i].endDateTime.c_str(), sessions[i].refDate.c_str());
+	}
+}
+
+void TwsDlWrapper::userInfo(int reqId, const std::string& whiteBrandingId)
+{
+    DEBUG_PRINTF("USER_INFO. ReqId: %d, WhiteBrandingId: %s\n", reqId, whiteBrandingId.c_str());
+}
