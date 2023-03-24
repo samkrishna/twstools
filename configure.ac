@@ -67,7 +67,7 @@ AC_ARG_ENABLE([iborig],
   [],[enable_iborig = no])
 if test x$enable_iborig = xyes; then
    twsapi=twsapi-iborig
-   twsapi_min="1.73.0"
+   twsapi_min="2.19.0"
    AC_DEFINE([TWS_ORIG_CLIENT], [1], [Define if we build with iborig enabled])
 fi
 AM_CONDITIONAL([WITH_IBORIG], [test x$enable_iborig = xyes])
