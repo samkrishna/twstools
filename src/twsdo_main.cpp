@@ -112,7 +112,7 @@ static void gengetopt_free()
 
 int main(int argc, char *argv[])
 {
-	atexit( gengetopt_free );
+    atexit( gengetopt_free );
 
 	if( cmdline_parser(argc, argv, &args_info) != 0 ) {
 		return 2; // exit
