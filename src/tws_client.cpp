@@ -168,10 +168,10 @@ void TWSClient::selectStuff( int msec )
 	}
 # endif
 #else
-	DEBUG_PRINTF("waitForSignal ....." );
+	// DEBUG_PRINTF("waitForSignal ....." );
 	eSignal->waitForSignal();
 	errno = 0;
-	DEBUG_PRINTF("processMsgs ....." );
+	// DEBUG_PRINTF("processMsgs ....." );
 	eReader->processMsgs();
 #endif
 }
