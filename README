@@ -84,7 +84,8 @@ Note there is still a lot debug output on stderr. Just redirect it into files:
 NOTE for macOS Sonoma:
 ----------------------
 
-As of 2024-01-22, you may have to use Xcode 14's toolchain to perform the build. There's a weird linker error in Xcode 15.
+As of 2024-01-22, you may have to use Xcode 14's toolchain to perform the build. 
+There's a weird linker error in Xcode 15.
 
 Usage
 -----
