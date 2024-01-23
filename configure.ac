@@ -8,7 +8,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_SRCDIR([src/])
 
 AM_INIT_AUTOMAKE([1.11 -Wall -Wno-portability foreign dist-xz no-dist-gzip
-                  parallel-tests color-tests])
+                  parallel-tests color-tests subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
