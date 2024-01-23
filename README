@@ -67,7 +67,7 @@ When building from git checkout you need the autotools and gengetopt and don't
 forget to type "autoreconf -vfi" first.
 
 
- ./configure
+ ./configure --enable-iborig LIBS="-lbid"
  make
  make install
 
