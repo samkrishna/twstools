@@ -87,6 +87,10 @@ NOTE for macOS Sonoma:
 As of 2024-01-22, you may have to use Xcode 14's toolchain to perform the build. 
 There's a weird linker error in Xcode 15.
 
+There may be a usable hint here in the future about this issue:
+
+https://gist.github.com/loderunner/b6846dd82967ac048439
+
 Usage
 -----
 
