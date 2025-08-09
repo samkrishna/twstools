@@ -187,12 +187,14 @@ class TwsXml
 	}
 
 #define GET_ATTR_DECIMAL( _struct_, _attr_ ) \
-	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
-	if( tmp ) { \
-		_struct_->_attr_ = strtoull( tmp, NULL, 0 ); \
-		free(tmp); \
-	}
-
+    { \
+        char* xmlTmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
+        if( xmlTmp ) { \
+            std::string tmp(xmlTmp); \
+            _struct_->_attr_ = stringToDecimal( tmp ); \
+            xmlFree(xmlTmp); \
+        } \
+    }
 
 #define ADD_ATTR_INT( _struct_, _attr_ ) \
 	if( !TwsXml::skip_defaults || _struct_._attr_ != dflt._attr_ ) { \
