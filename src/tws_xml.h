@@ -148,42 +148,42 @@ class TwsXml
 	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
 	if( tmp ) { \
 		_struct_->_attr_ = atoi( tmp ); \
-		free(tmp); \
+		xmlFree(tmp); \
 	}
 
 #define GET_ATTR_LONG( _struct_, _attr_ ) \
 	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
 	if( tmp ) { \
 		_struct_->_attr_ = atol( tmp ); \
-		free(tmp); \
+		xmlFree(tmp); \
 	}
 
 #define GET_ATTR_LONGLONG( _struct_, _attr_ ) \
 	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
 	if( tmp ) { \
 		_struct_->_attr_ = atoll( tmp ); \
-		free(tmp); \
+		xmlFree(tmp); \
 	}
 
 #define GET_ATTR_DOUBLE( _struct_, _attr_ ) \
 	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
 	if( tmp ) { \
 		_struct_->_attr_ = atof( tmp ); \
-		free(tmp); \
+		xmlFree(tmp); \
 	}
 
 #define GET_ATTR_BOOL( _struct_, _attr_ ) \
 	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
 	if( tmp ) { \
 		_struct_->_attr_ = atoi( tmp ); \
-		free(tmp); \
+		xmlFree(tmp); \
 	}
 
 #define GET_ATTR_STRING( _struct_, _attr_ ) \
 	tmp = (char*) xmlGetProp( node, (xmlChar*) #_attr_ ); \
 	if( tmp ) { \
 		_struct_->_attr_ = std::string(tmp); \
-		free(tmp); \
+		xmlFree(tmp); \
 	}
 
 #define GET_ATTR_DECIMAL( _struct_, _attr_ ) \
